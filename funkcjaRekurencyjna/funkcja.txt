@@ -1,0 +1,63 @@
+Napisać program wyznaczający w sposób rekurencyjny wartość funkcji określonej wzorem:
+			
+			{ m + 1 									dla n = 0;
+			{ m											dla n = 1;
+f(n,m) =	{ m + 2										dla n = 2;
+			{ f(n-1,m) - 2*f(n-2,m+1) - f(n-3,m)		w pozostałych przypadkach.
+			
+Program powinien pobierać argument z linii polecenia i wyprowadzać wynik na standardowe wyjście. Wewnątrz procedury wołanej rekurencyjnie nie mogą być używane zmienne globalne.
+
+(1) Pierwszy argument przekazywany przez rejestr ECX, pozostałe argumenty przekazywane przez stos.
+(2) Wynik zwracany przez rejestr EDX.
+(3) Za uporządkowanie stosu odpowiada wywoływana funkcja.
+(4) Wywoływana funkcja musi zachować wszystkie rejestry (oprócz rejestru, w którym zwracany jest wynik).
+
+------------------------------------------------------------------------------------------KOMENTARZ DO ZADANIA------------------------------------------------------------------------------------------
+
+Stworzyłem dodatkowy plik w języku C, aby sprawdzić prawdziwość wyników programu z Assemblera. Okazały się takie same. Dla pewności jeszcze zrobiłem obliczenia na kartce i również się pokryły.
+
+Tłumaczenie kodu:
+
+EAX - przechowuje wartość argumentu m
+ECX - przechowuje wartość parametru n
+EDX - przechowuje wartość wynikową
+EBX - bufor
+
+
+main:
+
+przypisujemy argv do ebx
+sprawdzamy, czy ilosc parametrow sie zgadza, jesli nie to wyswietlamy komunikat i konczymy program, jesli sie zgadza skaczemy do parameters_ok
+
+parameters_ok:
+bierzemy pierwszy argument z linii poleceń ecx = atoi(argv[1])
+atoi zwraca wartość w eax, więc powinniśmy zrobić mov ecx, eax, ale ponieważ atoi nadpisuje rejestr ecx to wrzucam wartość na stos i potem ją zdejmuję
+w tym czasie do eax wrzucam drugi argument z linii poleceń eax = atoi(argv[2]) i zrzucam ze stosu wartość pierwszego argumentu do ecx
+potem wywołujemy "function" rekurencyjną, gdy się wykona dajemy napis wynikowy msg i kończymy program
+
+function:
+umieszczamy rejestry na szczyt stosu, do EAX przypisujemy m, sprawdzamy czy n = 0, jezeli tak to konczymy program i zwracamy wynik, jezeli nie to sprawdzamy, czy przypadkiem n = 1
+
+f1:
+sprawdzamy czy n = 1, jesli tak to konczymy i dajemy wynik na ekran, jesli nie to idziemy dalej
+
+f2:
+sprawdzamy czy n =2, jesli tak to konczymy i dajemy wynik an ekran, jesli nie to idziemy dalej
+
+fnext:
+edi = n (stary ecx)
+esi = m (stary eax)
+jako, ze edx bedzie zajęty przez "function" to użyjemy ebx jako bufora do częściowych sum f(n - 1, m) - 2 * f(n - 2, m + 1) - f(n - 3, m)
+ebx = f(n - 1, m)
+ebx = f(n - 1, m) - f(n - 2, m + 1)
+ebx = f(n - 1, m) - 2 * f(n - 2, m + 1)
+ebx = f(n - 1, m) - 2 * f(n - 2, m + 1) - f(n - 3, m)
+
+czyli mamy funkcję o którą nam chodziło
+
+final:
+zrzucamy wszystko ze stosu co wrzucilismy w function, zwrocenie wyniku
+
+------------------------------------------------------------------------------------------KOMENTARZ DO ZADANIA------------------------------------------------------------------------------------------
+
+			
