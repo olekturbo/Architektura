@@ -1,9 +1,9 @@
 Napisać program wyznaczający w sposób rekurencyjny wartość funkcji określonej wzorem:
 			
 			{ m + 1 									dla n = 0;
-			{ m											dla n = 1;
-f(n,m) =	{ m + 2										dla n = 2;
-			{ f(n-1,m) - 2*f(n-2,m+1) - f(n-3,m)		w pozostałych przypadkach.
+			{ m										dla n = 1;
+f(n,m) =		{ m + 2										dla n = 2;
+			{ f(n-1,m) - 2*f(n-2,m+1) - f(n-3,m)						w pozostałych przypadkach.
 			
 Program powinien pobierać argument z linii polecenia i wyprowadzać wynik na standardowe wyjście. Wewnątrz procedury wołanej rekurencyjnie nie mogą być używane zmienne globalne.
 
